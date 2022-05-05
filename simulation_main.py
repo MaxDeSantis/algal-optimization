@@ -10,21 +10,24 @@ import matplotlib.pyplot as plt
 
 class AlgalOptimizationSimulator:
     def __init__(self):
+        self.boatSearchTechnique = SearchBoat.SearchTechnique.fixed_step
         self.boatStartingX = -7.0
         self.boatStartingY = 13.0
 
+        self.loopDuration = 0.5 # Seconds
+        self.pauseDelay = 0.001 # seconds
+
         self.meanX = 2.0
         self.meanY = -4.6
-        self.cov = [[10, 0], [0, 10]]
+        self.cov = [[10, 10], [10, 40]]
 
         self.algalDist = AlgalDistribution(self.meanX, self.meanY, self.cov)
-        self.boat = SearchBoat(self.algalDist, self.boatStartingX, self.boatStartingY)
-
+        self.boat = SearchBoat(self.algalDist, self.boatStartingX, self.boatStartingY, self.loopDuration, self.boatSearchTechnique)
+        
         self.time = 0
         self.boat.theta = math.pi
 
-        self.loopDuration = 0.5 # Seconds
-        self.pauseDelay = 0.05 # seconds
+        
 
         plt.xlim(-20, 20)
         plt.ylim(-20, 20)
@@ -36,21 +39,22 @@ class AlgalOptimizationSimulator:
 
 
     def PrintSimStatus(self):
-        print('T:', self.time, 'STATE:', self.boat.state, 'CONCENTRATION:', self.boat.concentration, 'POS: ' + str(self.boat.x) + ',' + str(self.boat.y) + ')', "DISTANCE:", self.boat.GetDistance(self.boat.x, self.boat.y, self.meanX, self.meanY))
-
+        if not self.boat.state == self.boat.SearchState.stop:
+            print('T:', self.time, 'STATE:', self.boat.state, 'CONCENTRATION:', self.boat.concentration, 'POS: ' + str(self.boat.x) + ',' + str(self.boat.y) + ')', "DISTANCE:", self.boat.GetDistance(self.boat.x, self.boat.y, self.meanX, self.meanY))
     def PlotSimStatus(self):
-        
-
+        plt.title(str(self.boatSearchTechnique) + f' T: {self.time:.2f} s')
+        plt.xlabel('X Position, meters')
+        plt.ylabel('Y Position, meters')
         plt.plot(self.boat.x, self.boat.y, marker="x", markersize=2, markerfacecolor='red', markeredgecolor='red')
         plt.draw()
         plt.pause(0.001)
 
 
     def Loop(self):
-        while True:
+        while not self.boat.state == SearchBoat.SearchState.stop:
             
             concentration = self.algalDist.GetConcentration(self.boat.x, self.boat.y)
-            self.boat.RunStateMachine(concentration, deltaT=self.loopDuration)
+            self.boat.RunStateMachine(concentration)
             self.PrintSimStatus()
 
             # Move boat
@@ -60,11 +64,13 @@ class AlgalOptimizationSimulator:
 
             # Increment time
             self.PlotSimStatus()
-            time.sleep(self.pauseDelay)
             self.time += self.loopDuration
-            
-
-
+        plt.show(block=True)
+        plt.savefig('sim_'+str(self.boatSearchTechnique)+f' T: {self.time:.2f}.png')
 
 sim = AlgalOptimizationSimulator()
 sim.Loop()
+
+# sim.boat.TravelToPoint(0, 0)
+# sim.boat.deltaT = sim.loopDuration
+# sim.PlotSimStatus()

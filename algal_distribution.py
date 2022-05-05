@@ -14,7 +14,7 @@ class AlgalDistribution:
         self.x,  self.y = np.mgrid[-20:20:.1, -20:20:.1]
         pos = np.dstack((self.x, self.y))
         rv = multivariate_normal(self.mean, self.covariance)
-        self.z = rv.pdf(pos)
+        self.z = -rv.pdf(pos)
         
 
 
@@ -23,5 +23,5 @@ class AlgalDistribution:
         self.covariance = covariance
 
     def GetConcentration(self, x: float, y: float) -> float:
-        concentration = multivariate_normal.pdf([x,y], self.mean, self.covariance)
+        concentration = 1.0 - multivariate_normal.pdf([x,y], self.mean, self.covariance)
         return concentration
