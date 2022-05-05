@@ -25,8 +25,8 @@ class SearchBoat:
         self.velocity = 1 # meter per second
         self.state = self.SearchState.get_gradient
         self.concentration = None
-        self.stepSize = 2 # Two meters for fixed step search
-        self.samplingRadius = 0.5 # Distance of sampling
+        self.stepSize = 3 # Two meters for fixed step search
+        self.samplingRadius = 1.5 # Distance of sampling
         self.sampleCount = 32
         self.fixedSearching = False
         self.deltaT = deltaT

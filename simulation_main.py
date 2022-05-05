@@ -10,16 +10,16 @@ import matplotlib.pyplot as plt
 
 class AlgalOptimizationSimulator:
     def __init__(self):
-        self.boatSearchTechnique = SearchBoat.SearchTechnique.fixed_step
-        self.boatStartingX = -7.0
-        self.boatStartingY = 13.0
+        self.boatSearchTechnique = SearchBoat.SearchTechnique.steepest_descent
+        self.boatStartingX = -4.0
+        self.boatStartingY = 17.0
 
         self.loopDuration = 0.5 # Seconds
         self.pauseDelay = 0.001 # seconds
 
-        self.meanX = 2.0
+        self.meanX = 4.0
         self.meanY = -4.6
-        self.cov = [[10, 10], [10, 40]]
+        self.cov = [[10, 15], [15, 40]]
 
         self.algalDist = AlgalDistribution(self.meanX, self.meanY, self.cov)
         self.boat = SearchBoat(self.algalDist, self.boatStartingX, self.boatStartingY, self.loopDuration, self.boatSearchTechnique)
@@ -65,9 +65,9 @@ class AlgalOptimizationSimulator:
             # Increment time
             self.PlotSimStatus()
             self.time += self.loopDuration
-        plt.show(block=True)
-        plt.savefig('sim_'+str(self.boatSearchTechnique)+f' T: {self.time:.2f}.png')
 
+        plt.ioff()
+        plt.show()
 sim = AlgalOptimizationSimulator()
 sim.Loop()
 
